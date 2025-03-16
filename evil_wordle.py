@@ -67,6 +67,7 @@ class Keyboard:
         self.rows = ("qwertyuiop", "asdfghjkl", "zxcvbnm")
         self.colors = {letter: NO_COLOR for letter in "qwertyuiopasdfghjklzxcvbnm"}
 
+    # TODO: Modify this method. You may delete this comment when you are done.
     def update(self, feedback_colors, guessed_word):
         """
         Updates the color of each letter on the keyboard based on feedback from a guessed word.
@@ -94,6 +95,7 @@ class Keyboard:
             elif self.colors[letter] == NO_COLOR:
                 self.colors[letter] = color
 
+    # TODO: Modify this method. You may delete this comment when you are done.
     def __str__(self):
         """
         Returns a string representation of the keyboard, showing each letter in its
@@ -131,7 +133,6 @@ class Keyboard:
                 ).strip()
         return keyboard_str
 
-
 class WordFamily:
     """
     A class representing a group or 'family' of words that match a specific
@@ -149,6 +150,7 @@ class WordFamily:
 
     COLOR_DIFFICULTY = {CORRECT_COLOR: 0, WRONG_SPOT_COLOR: 1, NOT_IN_WORD_COLOR: 2}
 
+    # TODO: Modify this method. You may delete this comment when you are done.
     def __init__(self, feedback_colors, words):
         """
         Initializes the WordFamily based on the feedback colors list. The
@@ -163,9 +165,11 @@ class WordFamily:
         self.feedback_colors = feedback_colors
         self.words = words
         self.difficulty = sum(
-            WordFamily.COLOR_DIFFICULTY[color] for color in feedback_colors
-        )
+            WordFamily.COLOR_DIFFICULTY[color] for color in feedback_colors)
 
+        # TODO: implement the difficulty calculation here.
+
+    # TODO: Modify this method. You may delete this comment when you are done.
     def __lt__(self, other):
         """
         Compares this WordFamily object with another by prioritizing a larger
@@ -189,6 +193,7 @@ class WordFamily:
             return self.difficulty > other.difficulty
         else:
             return self.feedback_colors > other.feedback_colors
+
 
     # DO NOT change this method.
     # You should use this for debugging!
@@ -318,6 +323,7 @@ def prepare_game():
     return attempts, valid_words
 
 
+# TODO: Modify this function. You may delete this comment when you are done.
 def fast_sort(lst):
     """
     Returns a new list with the same elements as lst sorted in ascending order. You MUST implement
@@ -329,7 +335,6 @@ def fast_sort(lst):
     post: Returns a new list that is sorted based on the items in lst.
 
     """
-
     def merge_sort(arr):
         if len(arr) <= 1:
             return arr
@@ -359,6 +364,8 @@ def fast_sort(lst):
     return merge_sort(lst[:])
 
 
+
+# TODO: Modify this helper function. You may delete this comment when you are done.
 def get_feedback_colors(secret_word, guessed_word):
     """
     Processes the guess and generates the colored feedback based on the potential secret word. This
@@ -399,6 +406,7 @@ def get_feedback_colors(secret_word, guessed_word):
     return feedback
 
 
+# TODO: Modify this function. You may delete this comment when you are done.
 def get_feedback(remaining_secret_words, guessed_word):
     """
     Processes the guess and generates the colored feedback based on the hardest word family. Use
@@ -503,5 +511,3 @@ def main():
 # DO NOT change these lines
 if __name__ == "__main__":
     main()
-
-
