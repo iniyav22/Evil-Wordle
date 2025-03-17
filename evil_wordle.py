@@ -87,13 +87,16 @@ class Keyboard:
         post: None
         """
         for i, letter in enumerate(guessed_word):
-            color = feedback_colors[i]
-            if color == CORRECT_COLOR:
-                self.colors[letter] = color
-            elif color == WRONG_SPOT_COLOR and self.colors[letter] != CORRECT_COLOR:
-                self.colors[letter] = color
-            elif self.colors[letter] == NO_COLOR:
-                self.colors[letter] = color
+            feedback = feedback_colors[i]
+            for j in self.colors:
+
+                if j == letter:
+                    if feedback == CORRECT_COLOR:
+                        self.colors[letter] = CORRECT_COLOR
+                    elif feedback == WRONG_SPOT_COLOR and self.colors[letter] != CORRECT_COLOR:
+                        self.colors[letter] = WRONG_SPOT_COLOR
+                    elif feedback == NOT_IN_WORD_COLOR and self.colors[letter] == NO_COLOR:
+                        self.colors[letter] = NOT_IN_WORD_COLOR
 
     # TODO: Modify this method. You may delete this comment when you are done.
     def __str__(self):
@@ -118,19 +121,20 @@ class Keyboard:
               and arranged to match a typical keyboard layout.
         """
         keyboard_str = ""
-        for i, row in enumerate(self.rows):
-            if i == 0:
-                keyboard_str += "".join(
-                    [color_word(self.colors[letter], letter) + " " for letter in row]
-                ).strip()
-            elif i == 1:
-                keyboard_str += "\n " + "".join(
-                    [color_word(self.colors[letter], letter) + " " for letter in row]
-                ).strip()
-            else:
-                keyboard_str += "\n   " + "".join(
-                    [color_word(self.colors[letter], letter) + " " for letter in row]
-                ).strip()
+        for letter in "qwertyuiop":
+            keyboard_str += color_word(self.colors[letter], letter) + " "
+        keyboard_str = keyboard_str.strip() + "\n"
+
+        keyboard_str += " "
+        for letter in "asdfghjkl":
+            keyboard_str += color_word(self.colors[letter], letter) + " "
+        keyboard_str = keyboard_str.strip() + "\n"
+
+        keyboard_str += "   "
+        for letter in "zxcvbnm":
+            keyboard_str += color_word(self.colors[letter], letter) + " "
+        keyboard_str = keyboard_str.strip()
+
         return keyboard_str
 
 class WordFamily:
@@ -164,8 +168,10 @@ class WordFamily:
         """
         self.feedback_colors = feedback_colors
         self.words = words
-        self.difficulty = sum(
-            WordFamily.COLOR_DIFFICULTY[color] for color in feedback_colors)
+        self.difficulty = 0
+        color_diff = {CORRECT_COLOR: 0, WRONG_SPOT_COLOR: 1, NOT_IN_WORD_COLOR: 2}
+        for feedback in feedback_colors:
+            self.difficulty += color_diff[feedback]
 
         # TODO: implement the difficulty calculation here.
 
@@ -183,16 +189,13 @@ class WordFamily:
             for WordFamily comparisons." if `other` is not a WordFamily instance.
         """
         if not isinstance(other, WordFamily):
-            raise NotImplementedError(
-                "< operator only valid for WordFamily comparisons."
-            )
+            raise NotImplementedError("< operator only valid for WordFamily comparisons.")
 
         if len(self.words) != len(other.words):
             return len(self.words) > len(other.words)
-        elif self.difficulty != other.difficulty:
+        if self.difficulty != other.difficulty:
             return self.difficulty > other.difficulty
-        else:
-            return self.feedback_colors > other.feedback_colors
+        return self.feedback_colors < other.feedback_colors
 
 
     # DO NOT change this method.
@@ -335,33 +338,20 @@ def fast_sort(lst):
     post: Returns a new list that is sorted based on the items in lst.
 
     """
-    def merge_sort(arr):
-        if len(arr) <= 1:
-            return arr
-
-        mid = len(arr) // 2
-        left = merge_sort(arr[:mid])
-        right = merge_sort(arr[mid:])
-
-        return merge(left, right)
-
-    def merge(left, right):
-        merged = []
-        i = j = 0
-
-        while i < len(left) and j < len(right):
-            if left[i] < right[j]:
-                merged.append(left[i])
-                i += 1
-            else:
-                merged.append(right[j])
-                j += 1
-
-        merged.extend(left[i:])
-        merged.extend(right[j:])
-        return merged
-
-    return merge_sort(lst[:])
+    if len(lst) <= 1:
+        return lst
+    mid = len(lst) // 2
+    less_lst = []
+    equal_lst = []
+    more_lst = []
+    for item in lst:
+        if item < lst[mid]:
+            less_lst.append(item)
+        if item == lst[mid]:
+            equal_lst.append(item)
+        if item > lst[mid]:
+            more_lst.append(item)
+    return fast_sort(less_lst) + equal_lst + fast_sort(more_lst)
 
 
 
@@ -382,26 +372,28 @@ def get_feedback_colors(secret_word, guessed_word):
           - Letters not in secret_word are marked with NOT_IN_WORD_COLOR. The list will be of
             length 5 with the ANSI coloring in each index as the returned value.
     """
-    feedback = [NOT_IN_WORD_COLOR] * NUM_LETTERS
-    secret_word_list = list(secret_word)
+    feedback = [None] * NUM_LETTERS
 
     # Mark correct letters
     for i in range(NUM_LETTERS):
         if guessed_word[i] == secret_word[i]:
             feedback[i] = CORRECT_COLOR
-            secret_word_list[i] = None  # Mark as used
-
     # Mark letters in the wrong position
-    for i in range(NUM_LETTERS):
-        if feedback[i] != CORRECT_COLOR:
-            for j in range(NUM_LETTERS):
-                if (
-                    guessed_word[i] == secret_word_list[j]
-                    and secret_word_list[j] is not None
-                ):
-                    feedback[i] = WRONG_SPOT_COLOR
-                    secret_word_list[j] = None  # Mark as used
-                    break
+    for j in range(NUM_LETTERS):
+        guesses = 0
+        if feedback[i] is None:
+            for x in range(NUM_LETTERS):
+                if guessed_word[x] == guessed_word[j]:
+                    if feedback[x] is not None:
+                        guesses = guesses + 1
+            if guessed_word[j] in secret_word:
+                if secret_word.count(guessed_word[j]) > guesses:
+                    feedback[j] = WRONG_SPOT_COLOR
+                    guesses = guesses + 1
+                else:
+                    feedback[j] = NOT_IN_WORD_COLOR
+            else:
+                feedback[j] = NOT_IN_WORD_COLOR
 
     return feedback
 
@@ -434,16 +426,13 @@ def get_feedback(remaining_secret_words, guessed_word):
             word_families[feedback_colors] = []
         word_families[feedback_colors].append(secret_word)
 
-    families = [
-        WordFamily(feedback_colors, words)
-        for feedback_colors, words in word_families.items()
-    ]
+    families = []
+    for colors, words in word_families.items():
+        families.append(WordFamily(colors, words))
 
     hardest_family = fast_sort(families)[0]
-    feedback_colors = hardest_family.feedback_colors
-    new_remaining_secret_words = hardest_family.words
 
-    return list(feedback_colors), new_remaining_secret_words
+    return hardest_family.feedback_colors, hardest_family.words
 
 
 # DO NOT modify this function.
