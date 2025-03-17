@@ -376,7 +376,7 @@ def get_feedback_colors(secret_word, guessed_word):
         guesses = 0
         if feedback[i] is None:
             for x in range(NUM_LETTERS):
-                if guessed_word[x] == guessed_word[j]:
+                if guessed_word[x] == guessed_word[i]:
                     if feedback[x] is not None:
                         guesses = guesses + 1
             if guessed_word[i] in secret_word:
