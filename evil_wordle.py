@@ -90,13 +90,13 @@ class Keyboard:
 
             for i in self.colors:
                 #check for each color in colors
-                if i == letter:
+                if i == letter: #if guesses letter is correct
                     if feedback == CORRECT_COLOR:
                         self.colors[letter] = CORRECT_COLOR
                     elif feedback == WRONG_SPOT_COLOR and self.colors[letter] != CORRECT_COLOR:
-                        self.colors[letter] = WRONG_SPOT_COLOR
+                        self.colors[letter] = WRONG_SPOT_COLOR #if guess is wrong spot
                     elif feedback == NOT_IN_WORD_COLOR and self.colors[letter] == NO_COLOR:
-                        self.colors[letter] = NOT_IN_WORD_COLOR
+                        self.colors[letter] = NOT_IN_WORD_COLOR # if guess is wrong
 
     def __str__(self):
         """
@@ -120,17 +120,17 @@ class Keyboard:
         and arranged to match a typical keyboard layout.
         """
         keyboard_str = ""
-        for letter in "qwertyuiop":
+        for letter in "qwertyuiop": #checks qwertyuiop
             keyboard_str += color_word(self.colors[letter], letter) + " "
         keyboard_str = keyboard_str.strip() + "\n"
 
         keyboard_str += " "
-        for letter in "asdfghjkl":
+        for letter in "asdfghjkl": #checks asdfghjkl
             keyboard_str += color_word(self.colors[letter], letter) + " "
         keyboard_str = keyboard_str.strip() + "\n"
 
         keyboard_str += "   "
-        for letter in "zxcvbnm":
+        for letter in "zxcvbnm": #cheks zxcvbnm
             keyboard_str += color_word(self.colors[letter], letter) + " "
         keyboard_str = keyboard_str.strip()
         #returns a different string according to letter
@@ -369,24 +369,24 @@ def get_feedback_colors(secret_word, guessed_word):
     feedback = [None] * NUM_LETTERS
 
     # Modify this! This is just starter code.
-    for i in range(NUM_LETTERS):
-        if secret_word[i] == guessed_word[i]:
-            feedback[i] = CORRECT_COLOR
-    for j in range (NUM_LETTERS):
+    for item in range(NUM_LETTERS):
+        if secret_word[item] == guessed_word[item]:
+            feedback[item] = CORRECT_COLOR
+    for i in range (NUM_LETTERS):
         guesses = 0
-        if feedback[j] is None:
+        if feedback[i] is None:
             for x in range(NUM_LETTERS):
                 if guessed_word[x] == guessed_word[j]:
                     if feedback[x] is not None:
                         guesses = guesses + 1
-            if guessed_word[j] in secret_word:
-                if secret_word.count(guessed_word[j]) > guesses:
-                    feedback[j] = WRONG_SPOT_COLOR
+            if guessed_word[i] in secret_word:
+                if secret_word.count(guessed_word[i]) > guesses:
+                    feedback[i] = WRONG_SPOT_COLOR
                     guesses = guesses + 1
                 else:
-                    feedback[j] = NOT_IN_WORD_COLOR
+                    feedback[i] = NOT_IN_WORD_COLOR
             else:
-                feedback[j] = NOT_IN_WORD_COLOR
+                feedback[i] = NOT_IN_WORD_COLOR
 
     # You do not have to change this return statement
     return feedback
@@ -414,14 +414,14 @@ def get_feedback(remaining_secret_words, guessed_word):
     feedback_fam = {} #creating set for feedback family
 
     for word in remaining_secret_words:
-        feedback = tuple(get_feedback_colors(word, guessed_word))
-        if feedback not in feedback_fam:
-            feedback_fam[feedback] = []
-        feedback_fam[feedback].append(word)
+        color = tuple(get_feedback_colors(word, guessed_word))
+        if color not in feedback_fam:
+            feedback_fam[color] = []
+        feedback_fam[color].append(word)
 
     word_fam = [] #list to store words
-    for feedback, words in feedback_fam.items():
-        word_fam.append(WordFamily(feedback, words)) #append list
+    for color, words in feedback_fam.items():
+        word_fam.append(WordFamily(color, words)) #append list
 
     hardest_fam = fast_sort(word_fam)[0]
 
