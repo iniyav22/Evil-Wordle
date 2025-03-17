@@ -67,7 +67,6 @@ class Keyboard:
         self.rows = ("qwertyuiop", "asdfghjkl", "zxcvbnm")
         self.colors = {letter: NO_COLOR for letter in "qwertyuiopasdfghjklzxcvbnm"}
 
-    # TODO: Modify this method. You may delete this comment when you are done.
     def update(self, feedback_colors, guessed_word):
         """
         Updates the color of each letter on the keyboard based on feedback from a guessed word.
@@ -87,18 +86,17 @@ class Keyboard:
         post: None
         """
         for i, letter in enumerate(guessed_word):
-            feedback = feedback_colors[i]
-            for j in self.colors:
+            color = feedback_colors[i]
 
-                if j == letter:
-                    if feedback == CORRECT_COLOR:
+            for char in self.colors:
+                if char == letter:
+                    if color == CORRECT_COLOR:
                         self.colors[letter] = CORRECT_COLOR
-                    elif feedback == WRONG_SPOT_COLOR and self.colors[letter] != CORRECT_COLOR:
+                    elif color == WRONG_SPOT_COLOR and self.colors[letter] != CORRECT_COLOR:
                         self.colors[letter] = WRONG_SPOT_COLOR
-                    elif feedback == NOT_IN_WORD_COLOR and self.colors[letter] == NO_COLOR:
+                    elif color == NOT_IN_WORD_COLOR and self.colors[letter] == NO_COLOR:
                         self.colors[letter] = NOT_IN_WORD_COLOR
 
-    # TODO: Modify this method. You may delete this comment when you are done.
     def __str__(self):
         """
         Returns a string representation of the keyboard, showing each letter in its
@@ -118,24 +116,25 @@ class Keyboard:
 
         pre: None
         post: Returns a formatted string with each letter colored according to feedback
-              and arranged to match a typical keyboard layout.
+        and arranged to match a typical keyboard layout.
         """
-        keyboard_str = ""
-        for letter in "qwertyuiop":
-            keyboard_str += color_word(self.colors[letter], letter) + " "
-        keyboard_str = keyboard_str.strip() + "\n"
+        ret_string = ""
+        for char in "qwertyuiop":
+            ret_string += color_word(self.colors[char], char) + " "
+        ret_string = ret_string.strip() + "\n"
 
-        keyboard_str += " "
-        for letter in "asdfghjkl":
-            keyboard_str += color_word(self.colors[letter], letter) + " "
-        keyboard_str = keyboard_str.strip() + "\n"
+        ret_string += " "
+        for char in "asdfghjkl":
+            ret_string += color_word(self.colors[char], char) + " "
+        ret_string = ret_string.strip() + "\n"
 
-        keyboard_str += "   "
-        for letter in "zxcvbnm":
-            keyboard_str += color_word(self.colors[letter], letter) + " "
-        keyboard_str = keyboard_str.strip()
+        ret_string += "   "
+        for char in "zxcvbnm":
+            ret_string += color_word(self.colors[char], char) + " "
+        ret_string = ret_string.strip()
 
-        return keyboard_str
+        return ret_string
+
 
 class WordFamily:
     """
@@ -154,7 +153,6 @@ class WordFamily:
 
     COLOR_DIFFICULTY = {CORRECT_COLOR: 0, WRONG_SPOT_COLOR: 1, NOT_IN_WORD_COLOR: 2}
 
-    # TODO: Modify this method. You may delete this comment when you are done.
     def __init__(self, feedback_colors, words):
         """
         Initializes the WordFamily based on the feedback colors list. The
@@ -166,16 +164,13 @@ class WordFamily:
             words: A list of words that match the feedback pattern
         post: None
         """
+        color_difficulty = {CORRECT_COLOR: 0, WRONG_SPOT_COLOR: 1, NOT_IN_WORD_COLOR: 2}
         self.feedback_colors = feedback_colors
         self.words = words
         self.difficulty = 0
-        color_diff = {CORRECT_COLOR: 0, WRONG_SPOT_COLOR: 1, NOT_IN_WORD_COLOR: 2}
-        for feedback in feedback_colors:
-            self.difficulty += color_diff[feedback]
+        for color in feedback_colors:
+            self.difficulty += color_difficulty[color]
 
-        # TODO: implement the difficulty calculation here.
-
-    # TODO: Modify this method. You may delete this comment when you are done.
     def __lt__(self, other):
         """
         Compares this WordFamily object with another by prioritizing a larger
@@ -190,13 +185,11 @@ class WordFamily:
         """
         if not isinstance(other, WordFamily):
             raise NotImplementedError("< operator only valid for WordFamily comparisons.")
-
         if len(self.words) != len(other.words):
             return len(self.words) > len(other.words)
         if self.difficulty != other.difficulty:
             return self.difficulty > other.difficulty
         return self.feedback_colors < other.feedback_colors
-
 
     # DO NOT change this method.
     # You should use this for debugging!
@@ -325,8 +318,6 @@ def prepare_game():
 
     return attempts, valid_words
 
-
-# TODO: Modify this function. You may delete this comment when you are done.
 def fast_sort(lst):
     """
     Returns a new list with the same elements as lst sorted in ascending order. You MUST implement
@@ -340,22 +331,21 @@ def fast_sort(lst):
     """
     if len(lst) <= 1:
         return lst
-    mid = len(lst) // 2
-    less_lst = []
-    equal_lst = []
-    more_lst = []
+    middle = len(lst) // 2
+    less_list = []
+    equal_list = []
+    more_list = []
     for item in lst:
-        if item < lst[mid]:
-            less_lst.append(item)
-        if item == lst[mid]:
-            equal_lst.append(item)
-        if item > lst[mid]:
-            more_lst.append(item)
-    return fast_sort(less_lst) + equal_lst + fast_sort(more_lst)
+        if item < lst[middle]:
+            less_list.append(item)
+        if item == lst[middle]:
+            equal_list.append(item)
+        if item > lst[middle]:
+            more_list.append(item)
+    return fast_sort(less_list) + equal_list + fast_sort(more_list)
 
 
 
-# TODO: Modify this helper function. You may delete this comment when you are done.
 def get_feedback_colors(secret_word, guessed_word):
     """
     Processes the guess and generates the colored feedback based on the potential secret word. This
@@ -374,31 +364,29 @@ def get_feedback_colors(secret_word, guessed_word):
     """
     feedback = [None] * NUM_LETTERS
 
-    # Mark correct letters
+    # Modify this! This is just starter code.
     for i in range(NUM_LETTERS):
-        if guessed_word[i] == secret_word[i]:
+        if secret_word[i] == guessed_word[i]:
             feedback[i] = CORRECT_COLOR
-    # Mark letters in the wrong position
-    for j in range(NUM_LETTERS):
-        guesses = 0
-        if feedback[i] is None:
-            for x in range(NUM_LETTERS):
-                if guessed_word[x] == guessed_word[j]:
-                    if feedback[x] is not None:
-                        guesses = guesses + 1
+    for j in range (NUM_LETTERS):
+        times_guessed = 0
+        if feedback[j] is None:
+            for k in range(NUM_LETTERS):
+                if guessed_word[k] == guessed_word[j]:
+                    if feedback[k] is not None:
+                        times_guessed = times_guessed + 1
             if guessed_word[j] in secret_word:
-                if secret_word.count(guessed_word[j]) > guesses:
+                if secret_word.count(guessed_word[j]) > times_guessed:
                     feedback[j] = WRONG_SPOT_COLOR
-                    guesses = guesses + 1
+                    times_guessed = times_guessed + 1
                 else:
                     feedback[j] = NOT_IN_WORD_COLOR
             else:
                 feedback[j] = NOT_IN_WORD_COLOR
 
+    # You do not have to change this return statement
     return feedback
 
-
-# TODO: Modify this function. You may delete this comment when you are done.
 def get_feedback(remaining_secret_words, guessed_word):
     """
     Processes the guess and generates the colored feedback based on the hardest word family. Use
@@ -418,21 +406,22 @@ def get_feedback(remaining_secret_words, guessed_word):
             2. Difficulty of the feedback
             3. Lexicographical ordering of the feedback (ASCII value comparisons)
     """
-    word_families = {}
+    # Modify this! This is just starter code.
+    feedback_families = {}
 
-    for secret_word in remaining_secret_words:
-        feedback_colors = tuple(get_feedback_colors(secret_word, guessed_word))
-        if feedback_colors not in word_families:
-            word_families[feedback_colors] = []
-        word_families[feedback_colors].append(secret_word)
+    for word in remaining_secret_words:
+        feedback = tuple(get_feedback_colors(word, guessed_word))
+        if feedback not in feedback_families:
+            feedback_families[feedback] = []
+        feedback_families[feedback].append(word)
 
-    families = []
-    for colors, words in word_families.items():
-        families.append(WordFamily(colors, words))
+    word_families = []
+    for feedback, words in feedback_families.items():
+        word_families.append(WordFamily(feedback, words))
 
-    hardest_family = fast_sort(families)[0]
+    hardest = fast_sort(word_families)[0]
 
-    return hardest_family.feedback_colors, hardest_family.words
+    return hardest.feedback_colors, hardest.words
 
 
 # DO NOT modify this function.
